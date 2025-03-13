@@ -17,7 +17,6 @@ class UserControllerTest extends BaseTest {
     private static final String LAST_USER_ID = "df4a75f9-74f8-4ee1-9f32-2240305eac90";
     private static final String LAST_PROJECT_ID = "project-123";
     private static final String BASE_URL = "https://troodtth-back.onrender.com";
-    private static final String ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNWXVzZXJAZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJVU0VSIl0sInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NDE4ODM4MzUsImV4cCI6MTc0MTg4NDczNX0.47TCu8hNX0ZXm94yjSj1r0rj_xjUY9TSsoGJlQ35ggQ";
 
     @BeforeAll
     public static void setup() {
@@ -30,7 +29,7 @@ class UserControllerTest extends BaseTest {
         Response response = getRequest("/users/me", 200, accessToken);
         assertEquals(200, response.statusCode());
         userId = response.body().jsonPath().getString("id");
-        assertNotNull(userId, "User ID должен быть получен");
+        assertNotNull(userId, "Get User ID");
     }
 
     @Test
@@ -58,7 +57,6 @@ class UserControllerTest extends BaseTest {
         Response response = putRequest("/users/" + userId, requestBody, 200, accessToken);
         assertEquals(200, response.statusCode());
 
-        // Проверяем, что данные реально обновились
         Response updatedResponse = getRequest("/users/" + userId, 200, accessToken);
         assertEquals("UpdatedName", updatedResponse.body().jsonPath().getString("first_name"));
     }
@@ -82,8 +80,7 @@ class UserControllerTest extends BaseTest {
         Response response = patchRequest("/users/me", requestBody, 200, accessToken);
         assertEquals(200, response.statusCode());
 
-        // Даем API время обработать изменение
-        Thread.sleep(2000); // Ждем 2 секунды
+        Thread.sleep(2000);
 
         Response updatedResponse = getRequest("/users/me", 200, accessToken);
         assertEquals("QA Engineer", updatedResponse.body().jsonPath().getString("job_title"));
@@ -103,10 +100,8 @@ class UserControllerTest extends BaseTest {
     public void testGetUsersWithSharedProjects() {
         RestAssured.baseURI = BASE_URL;
 
-        // Получаем свежий токен перед тестом
         String freshAccessToken = loginAccessToken("MYuser@example.com", "MYuser");
 
-        // Отправляем запрос к API
         Response response = given()
                 .header("Authorization", "Bearer " + freshAccessToken)
                 .header("Accept", "application/json")
@@ -118,40 +113,31 @@ class UserControllerTest extends BaseTest {
                 .then()
                 .extract().response();
 
-        // Логируем статус-код и ответ API
         System.out.println("Статус-код: " + response.getStatusCode());
         System.out.println("Ответ API: " + response.getBody().asString());
 
-        // Проверяем статус-код
-        assertEquals(200, response.getStatusCode(), "Ожидался статус 200, но получен: " + response.getStatusCode());
+        assertEquals(200, response.getStatusCode(), "Expected status 200, but received: " + response.getStatusCode());
 
-        // Получаем тело ответа
         Map<String, Object> responseBody = response.jsonPath().getMap("$");
 
-        // Проверяем наличие ключа "items"
-        assertNotNull(responseBody.get("items"), "Поле 'items' отсутствует в ответе API");
+        assertNotNull(responseBody.get("items"), "Field 'items' is missing in the API response.");
 
-        // Определяем тип `items` и обрабатываем соответствующе
         Object itemsObject = responseBody.get("items");
 
         if (itemsObject instanceof Map) {
-            // API вернул пустой объект `{}`, значит, нет данных
             Map<?, ?> itemsMap = (Map<?, ?>) itemsObject;
-            assertTrue(itemsMap.isEmpty(), "API вернул объект, но он не пустой: " + itemsMap);
-            System.out.println("API вернул пустой объект 'items', данных нет.");
+            assertTrue(itemsMap.isEmpty(), "API returned an object, but it is not empty: " + itemsMap);
+            System.out.println("API returned an empty 'items' object, no data available.");
         } else if (itemsObject instanceof List) {
-            // API вернул список пользователей
+            // API returned a list of users
             List<?> itemsList = (List<?>) itemsObject;
-            assertFalse(itemsList.isEmpty(), "Список пользователей не должен быть пустым.");
-            System.out.println("API вернул список пользователей: " + itemsList.size() + " записей.");
+            assertFalse(itemsList.isEmpty(), "The list of users should not be empty.");
+            System.out.println("API returned a list of users: " + itemsList.size() + " entries.");
         } else {
-            fail("Поле 'items' имеет неизвестный тип: " + itemsObject.getClass().getSimpleName());
+            fail("The 'items' field has an unknown type: " + itemsObject.getClass().getSimpleName());
         }
+
     }
-
-
-
-
 }
 
 
