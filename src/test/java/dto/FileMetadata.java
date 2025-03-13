@@ -19,5 +19,9 @@ public class FileMetadata {
 
     @JsonProperty("file_type")
     private String fileType;
+
+   // @JsonProperty("description")
+    //private String description;
+
 }
 

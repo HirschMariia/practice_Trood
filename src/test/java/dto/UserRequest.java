@@ -1,23 +1,24 @@
 package dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import groovy.transform.builder.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RegisterUserRequest {
-    @JsonProperty("firebase_id")
-    private String firebaseId;
+public class UserRequest {
+    @JsonProperty("id")
+    private String id;
 
     @JsonProperty("email")
     private String email;
@@ -43,6 +44,9 @@ public class RegisterUserRequest {
     @JsonProperty("pitch_product")
     private String pitchProduct;
 
+    @JsonProperty("profile_id")
+    private String profileId;
+
     @JsonProperty("position")
     private String position;
 
@@ -52,33 +56,16 @@ public class RegisterUserRequest {
     @JsonProperty("skills")
     private List<String> skills;
 
-    @JsonProperty("files")
-    private Map<String, FileMetadata> files;  // ВЕРНУЛ FileMetadata!
-
     @JsonProperty("rate")
     private int rate;
-
-    @JsonProperty("profile_id")
-    private String profileId;
 
     @JsonProperty("project_ids")
     private List<String> projectIds;
 
-    @JsonProperty("password")
-    private String password;
+    @JsonProperty("created_at")
+    private RegisterUserRequest.CreatedAt createdAt;
 
-   // @JsonProperty("id")
-   // private String id;
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CreatedAt {
-        @JsonProperty("seconds")
-        private long seconds;
-
-        @JsonProperty("nanos")
-        private int nanos;
-    }
+    @JsonProperty("updated_at")
+    private RegisterUserRequest.CreatedAt updatedAt;
 }
+

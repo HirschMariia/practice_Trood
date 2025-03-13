@@ -37,7 +37,7 @@ public class RegisterUserTest extends BaseTest {
                 .password("Test1234!")
                 .build();
 
-        Response response = postRequest("/auth/register", 200, request, null); // Изменил expectedStatusCode на 200
+        Response response = postRequest("/auth/register", 200, request, null);
         int actualStatusCode = response.statusCode();
         assertTrue(actualStatusCode == 200 || actualStatusCode == 201,
                 "Статус код должен быть 200 или 201, но получен: " + actualStatusCode);
